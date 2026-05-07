@@ -1,258 +1,668 @@
-<div class="filter-bar">
-  <div class="filter-wrapper">
-    <!-- Search Section -->
-    <div class="search-section">
-      <label for="searchInput">Search</label>
-      <div class="search-input-wrapper">
-        <span class="search-icon">🔍</span>
-        <input
-          id="searchInput"
-          type="text"
-          placeholder="UX UI Designer"
-          [(ngModel)]="searchQuery"
-          (input)="applyFilters()"
-        />
-      </div>
+<!-- ═══ DESKTOP LAYOUT (> 600px) ═══ -->
+<section class="page" [ngClass]="'phase-' + animPhase">
+  <header class="page-header">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span class="brand-name">livinginpixel</span>
+    </div>
+    <span class="result-label" *ngIf="searchQuery || activeFilterCount > 0">
+      {{ filteredJobs.length }} result{{ filteredJobs.length !== 1 ? "s" : "" }}
+    </span>
+  </header>
+
+  <div class="controls">
+    <div
+      class="search-field"
+      [class.is-active]="animPhase === 'blooming' || animPhase === 'entering'"
+    >
+      <svg
+        class="icon-search"
+        viewBox="0 0 20 20"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+      >
+        <circle cx="8.5" cy="8.5" r="5.5" />
+        <line x1="13" y1="13" x2="18" y2="18" />
+      </svg>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Role, company…"
+        autocomplete="off"
+        [(ngModel)]="searchQuery"
+        (input)="onSearchInput()"
+      />
+      <button
+        *ngIf="searchQuery"
+        waveBtn
+        class="btn-clear-input"
+        (click)="clearFilters()"
+        aria-label="Clear"
+      >
+        <svg
+          viewBox="0 0 14 14"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <line x1="2" y1="2" x2="12" y2="12" />
+          <line x1="12" y1="2" x2="2" y2="12" />
+        </svg>
+      </button>
     </div>
 
-    <img src="seperator.png" alt="separator" class="seperator" />
-
-    <!-- Filters Section -->
-    <div class="filters-section">
-      <div class="filter-options">
-      <label>Filters</label>
-      <div class="filters">
-        <select
-          id="locationFilter"
-          [(ngModel)]="selectedLocation"
-          (change)="applyFilters()"
+    <div class="filter-row">
+      <div
+        class="select-wrap"
+        [class.has-value]="hasFilterValue('location')"
+        [class.is-open]="isMenuOpen('location')"
+        (click)="$event.stopPropagation()"
+      >
+        <span class="select-label">Location</span>
+        <button
+          class="select-trigger"
+          type="button"
+          (click)="toggleMenu('location', $event)"
         >
-          <option value="">Location</option>
-          <option *ngFor="let location of locations" [value]="location">
-            {{ location }}
-          </option>
-        </select>
-
-        <select
-          id="jobTypeFilter"
-          [(ngModel)]="selectedJobType"
-          (change)="applyFilters()"
-        >
-          <option value="">Job type</option>
-          <option *ngFor="let jobType of jobTypes" [value]="jobType">
-            {{ jobType }}
-          </option>
-        </select>
-
-        <select
-          id="experienceLevelFilter"
-          [(ngModel)]="selectedExperienceLevel"
-          (change)="applyFilters()"
-        >
-          <option value="">Experience level</option>
-          <option *ngFor="let level of experienceLevels" [value]="level">
-            {{ level }}
-          </option>
-        </select>
-      </div>
-    </div>
-
-      <!-- Clear Filters -->
-      <div class="clear-section">
-        <label (click)="clearFilters()">Clear Filters</label>
-        <div class="filters">
-          <select
-            id="companyTypeFilter"
-            [(ngModel)]="selectedCompanyType"
-            (change)="applyFilters()"
+          <span class="select-value">{{
+            selectedLocation || "Any location"
+          }}</span>
+          <svg
+            class="filter-glyph"
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           >
-            <option value="">Company type</option>
-            <option *ngFor="let company of companyTypes" [value]="company">
-              {{ company }}
-            </option>
-          </select>
+            <path d="M4 6.5h12" />
+            <path d="M6.5 10h7" />
+            <path d="M8.75 13.5h2.5" />
+            <path d="M14.25 5.25l1.75 1.25-1.75 1.25" />
+          </svg>
+        </button>
+        <div
+          class="select-menu"
+          *ngIf="isMenuOpen('location')"
+          (mousemove)="onMenuOptionHover($event)"
+        >
+          <button
+            class="menu-option"
+            type="button"
+            [class.is-selected]="!selectedLocation"
+            (click)="selectFilter('location', '', $event)"
+          >
+            Any location
+          </button>
+          <button
+            class="menu-option"
+            type="button"
+            *ngFor="let l of locations"
+            [class.is-selected]="selectedLocation === l"
+            (click)="selectFilter('location', l, $event)"
+          >
+            {{ l }}
+          </button>
         </div>
       </div>
+
+      <div
+        class="select-wrap"
+        [class.has-value]="hasFilterValue('jobType')"
+        [class.is-open]="isMenuOpen('jobType')"
+        (click)="$event.stopPropagation()"
+      >
+        <span class="select-label">Job Type</span>
+        <button
+          class="select-trigger"
+          type="button"
+          (click)="toggleMenu('jobType', $event)"
+        >
+          <span class="select-value">{{ selectedJobType || "Any type" }}</span>
+          <svg
+            class="filter-glyph"
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M4 6.5h12" />
+            <path d="M6.5 10h7" />
+            <path d="M8.75 13.5h2.5" />
+            <path d="M14.25 5.25l1.75 1.25-1.75 1.25" />
+          </svg>
+        </button>
+        <div
+          class="select-menu"
+          *ngIf="isMenuOpen('jobType')"
+          (mousemove)="onMenuOptionHover($event)"
+        >
+          <button
+            class="menu-option"
+            type="button"
+            [class.is-selected]="!selectedJobType"
+            (click)="selectFilter('jobType', '', $event)"
+          >
+            Any type
+          </button>
+          <button
+            class="menu-option"
+            type="button"
+            *ngFor="let t of jobTypes"
+            [class.is-selected]="selectedJobType === t"
+            (click)="selectFilter('jobType', t, $event)"
+          >
+            {{ t }}
+          </button>
+        </div>
       </div>
+
+      <div
+        class="select-wrap"
+        [class.has-value]="hasFilterValue('experienceLevel')"
+        [class.is-open]="isMenuOpen('experienceLevel')"
+        (click)="$event.stopPropagation()"
+      >
+        <span class="select-label">Experience</span>
+        <button
+          class="select-trigger"
+          type="button"
+          (click)="toggleMenu('experienceLevel', $event)"
+        >
+          <span class="select-value">{{
+            selectedExperienceLevel || "Any level"
+          }}</span>
+          <svg
+            class="filter-glyph"
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M4 6.5h12" />
+            <path d="M6.5 10h7" />
+            <path d="M8.75 13.5h2.5" />
+            <path d="M14.25 5.25l1.75 1.25-1.75 1.25" />
+          </svg>
+        </button>
+        <div
+          class="select-menu"
+          *ngIf="isMenuOpen('experienceLevel')"
+          (mousemove)="onMenuOptionHover($event)"
+        >
+          <button
+            class="menu-option"
+            type="button"
+            [class.is-selected]="!selectedExperienceLevel"
+            (click)="selectFilter('experienceLevel', '', $event)"
+          >
+            Any level
+          </button>
+          <button
+            class="menu-option"
+            type="button"
+            *ngFor="let l of experienceLevels"
+            [class.is-selected]="selectedExperienceLevel === l"
+            (click)="selectFilter('experienceLevel', l, $event)"
+          >
+            {{ l }}
+          </button>
+        </div>
+      </div>
+
+      <div
+        class="select-wrap"
+        [class.has-value]="hasFilterValue('companyType')"
+        [class.is-open]="isMenuOpen('companyType')"
+        (click)="$event.stopPropagation()"
+      >
+        <span class="select-label">Company Type</span>
+        <button
+          class="select-trigger"
+          type="button"
+          (click)="toggleMenu('companyType', $event)"
+        >
+          <span class="select-value">{{
+            selectedCompanyType || "Any company"
+          }}</span>
+          <svg
+            class="filter-glyph"
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M4 6.5h12" />
+            <path d="M6.5 10h7" />
+            <path d="M8.75 13.5h2.5" />
+            <path d="M14.25 5.25l1.75 1.25-1.75 1.25" />
+          </svg>
+        </button>
+        <div
+          class="select-menu"
+          *ngIf="isMenuOpen('companyType')"
+          (mousemove)="onMenuOptionHover($event)"
+        >
+          <button
+            class="menu-option"
+            type="button"
+            [class.is-selected]="!selectedCompanyType"
+            (click)="selectFilter('companyType', '', $event)"
+          >
+            Any company
+          </button>
+          <button
+            class="menu-option"
+            type="button"
+            *ngFor="let c of companyTypes"
+            [class.is-selected]="selectedCompanyType === c"
+            (click)="selectFilter('companyType', c, $event)"
+          >
+            {{ c }}
+          </button>
+        </div>
+      </div>
+
+      <button
+        *ngIf="activeFilterCount > 0"
+        waveBtn
+        class="btn-clear-all"
+        (click)="clearFilters()"
+      >
+        Clear ({{ activeFilterCount }})
+      </button>
+    </div>
   </div>
-</div>
 
+  <div class="layout">
+    <div class="job-list">
+      <ng-container *ngIf="filteredJobs.length > 0; else emptyState">
+        <article
+          *ngFor="let job of filteredJobs; let i = index"
+          class="job-card"
+          [class.is-selected]="selectedJob?.id === job.id"
+          [style.--i]="i"
+          (click)="onCardClick(job)"
+          (mousemove)="onCardMouseMove($event)"
+          (mouseleave)="onCardMouseLeave($event)"
+          tabindex="0"
+          role="button"
+        >
+          <div class="card-header">
+            <img [src]="job.logo" [alt]="job.company" class="company-logo" />
+            <div class="card-meta">
+              <span class="company-name">{{ job.company }}</span>
+              <span class="type-pill">{{ job.jobType }}</span>
+            </div>
+            <span
+              *ngIf="job.badge"
+              class="badge"
+              [class]="'badge--' + job.badge"
+            >
+              {{ job.badge === "hot" ? "🔥" : "✶" }}&nbsp;{{
+                job.badge === "hot" ? "Hot" : "New"
+              }}
+            </span>
+          </div>
+          <h3 class="job-title">{{ job.title }}</h3>
+          <p class="job-salary">{{ job.salary }}</p>
+          <div class="skill-tags">
+            <span
+              class="skill-tag"
+              *ngFor="let tag of job.tags; let ti = index"
+              [style.--ti]="ti"
+              >{{ tag }}</span
+            >
+          </div>
+          <div class="location-row">
+            <svg
+              class="pin-icon"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+            >
+              <path
+                d="M8 1.5C5.5 1.5 3.5 3.5 3.5 6C3.5 9.5 8 14.5 8 14.5C8 14.5 12.5 9.5 12.5 6C12.5 3.5 10.5 1.5 8 1.5Z"
+              />
+              <circle cx="8" cy="6" r="1.5" />
+            </svg>
+            <span>{{ job.location }}</span>
+            <span class="dot-sep">&middot;</span>
+            <span>{{ job.experienceLevel }}</span>
+          </div>
+        </article>
+      </ng-container>
 
+      <ng-template #emptyState>
+        <div class="empty-state">
+          <span class="empty-icon">◌</span>
+          <p class="empty-title">No results</p>
+          <p class="empty-sub">Try adjusting your search or filters</p>
+          <button waveBtn class="btn-clear-all" (click)="clearFilters()">
+            Reset filters
+          </button>
+        </div>
+      </ng-template>
+    </div>
 
-<!-- search for small screen -->
-<div class="search-bar-container">
-  <!-- Search Input -->
-  <div class="search-input-wrapper">
-    <span class="search-icon">🔍</span>
+    <div
+      class="detail-panel"
+      *ngIf="showDetail && selectedJob && filteredJobs.length > 0"
+    >
+      <app-filter-content [job]="selectedJob"></app-filter-content>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MOBILE LAYOUT (≤ 600px) ═══ -->
+<section class="page-mobile" [ngClass]="'phase-' + animPhase">
+  <div
+    class="mobile-search"
+    [class.is-active]="animPhase === 'blooming' || animPhase === 'entering'"
+  >
+    <svg
+      class="icon-search"
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+    >
+      <circle cx="8.5" cy="8.5" r="5.5" />
+      <line x1="13" y1="13" x2="18" y2="18" />
+    </svg>
     <input
-      id="searchInput"
       type="text"
-      placeholder="Search for jobs..."
+      placeholder="Search roles, companies…"
+      autocomplete="off"
       [(ngModel)]="searchQuery"
-      (input)="applyFilters()"
+      (input)="onSearchInput()"
     />
+    <button
+      *ngIf="searchQuery"
+      class="btn-clear-input"
+      (click)="clearFilters()"
+    >
+      ✕
+    </button>
   </div>
 
-  <!-- Filters -->
-  <div class="filters-container">
-    <select [(ngModel)]="selectedLocation" (change)="applyFilters()">
-      <option value="">Location</option>
-      <option *ngFor="let location of locations" [value]="location">{{ location }}</option>
-    </select>
-
-    <select [(ngModel)]="selectedJobType" (change)="applyFilters()">
-      <option value="">Job type</option>
-      <option *ngFor="let jobType of jobTypes" [value]="jobType">{{ jobType }}</option>
-    </select>
-
-    <select [(ngModel)]="selectedExperienceLevel" (change)="applyFilters()">
-      <option value="">Experience level</option>
-      <option *ngFor="let level of experienceLevels" [value]="level">{{ level }}</option>
-    </select>
-
-    <select [(ngModel)]="selectedCompanyType" (change)="applyFilters()">
-      <option value="">Company type</option>
-      <option *ngFor="let company of companyTypes" [value]="company">{{ company }}</option>
-    </select>
+  <div class="mobile-filters">
+    <div
+      class="mobile-select"
+      [class.has-value]="hasFilterValue('location')"
+      [class.is-open]="isMenuOpen('location')"
+      (click)="$event.stopPropagation()"
+    >
+      <span class="select-label">Location</span>
+      <button
+        class="select-trigger"
+        type="button"
+        (click)="toggleMenu('location', $event)"
+      >
+        <span class="select-value">{{
+          selectedLocation || "Any location"
+        }}</span>
+        <svg
+          class="filter-glyph"
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M4 6.5h12" />
+          <path d="M6.5 10h7" />
+          <path d="M8.75 13.5h2.5" />
+          <path d="M14.25 5.25l1.75 1.25-1.75 1.25" />
+        </svg>
+      </button>
+      <div
+        class="select-menu"
+        *ngIf="isMenuOpen('location')"
+        (mousemove)="onMenuOptionHover($event)"
+      >
+        <button
+          class="menu-option"
+          type="button"
+          [class.is-selected]="!selectedLocation"
+          (click)="selectFilter('location', '', $event)"
+        >
+          Any location
+        </button>
+        <button
+          class="menu-option"
+          type="button"
+          *ngFor="let l of locations"
+          [class.is-selected]="selectedLocation === l"
+          (click)="selectFilter('location', l, $event)"
+        >
+          {{ l }}
+        </button>
+      </div>
+    </div>
+    <div
+      class="mobile-select"
+      [class.has-value]="hasFilterValue('jobType')"
+      [class.is-open]="isMenuOpen('jobType')"
+      (click)="$event.stopPropagation()"
+    >
+      <span class="select-label">Job Type</span>
+      <button
+        class="select-trigger"
+        type="button"
+        (click)="toggleMenu('jobType', $event)"
+      >
+        <span class="select-value">{{ selectedJobType || "Any type" }}</span>
+        <svg
+          class="filter-glyph"
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M4 6.5h12" />
+          <path d="M6.5 10h7" />
+          <path d="M8.75 13.5h2.5" />
+          <path d="M14.25 5.25l1.75 1.25-1.75 1.25" />
+        </svg>
+      </button>
+      <div
+        class="select-menu"
+        *ngIf="isMenuOpen('jobType')"
+        (mousemove)="onMenuOptionHover($event)"
+      >
+        <button
+          class="menu-option"
+          type="button"
+          [class.is-selected]="!selectedJobType"
+          (click)="selectFilter('jobType', '', $event)"
+        >
+          Any type
+        </button>
+        <button
+          class="menu-option"
+          type="button"
+          *ngFor="let t of jobTypes"
+          [class.is-selected]="selectedJobType === t"
+          (click)="selectFilter('jobType', t, $event)"
+        >
+          {{ t }}
+        </button>
+      </div>
+    </div>
+    <div
+      class="mobile-select"
+      [class.has-value]="hasFilterValue('experienceLevel')"
+      [class.is-open]="isMenuOpen('experienceLevel')"
+      (click)="$event.stopPropagation()"
+    >
+      <span class="select-label">Experience</span>
+      <button
+        class="select-trigger"
+        type="button"
+        (click)="toggleMenu('experienceLevel', $event)"
+      >
+        <span class="select-value">{{
+          selectedExperienceLevel || "Any level"
+        }}</span>
+        <svg
+          class="filter-glyph"
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M4 6.5h12" />
+          <path d="M6.5 10h7" />
+          <path d="M8.75 13.5h2.5" />
+          <path d="M14.25 5.25l1.75 1.25-1.75 1.25" />
+        </svg>
+      </button>
+      <div
+        class="select-menu"
+        *ngIf="isMenuOpen('experienceLevel')"
+        (mousemove)="onMenuOptionHover($event)"
+      >
+        <button
+          class="menu-option"
+          type="button"
+          [class.is-selected]="!selectedExperienceLevel"
+          (click)="selectFilter('experienceLevel', '', $event)"
+        >
+          Any level
+        </button>
+        <button
+          class="menu-option"
+          type="button"
+          *ngFor="let l of experienceLevels"
+          [class.is-selected]="selectedExperienceLevel === l"
+          (click)="selectFilter('experienceLevel', l, $event)"
+        >
+          {{ l }}
+        </button>
+      </div>
+    </div>
+    <div
+      class="mobile-select"
+      [class.has-value]="hasFilterValue('companyType')"
+      [class.is-open]="isMenuOpen('companyType')"
+      (click)="$event.stopPropagation()"
+    >
+      <span class="select-label">Company Type</span>
+      <button
+        class="select-trigger"
+        type="button"
+        (click)="toggleMenu('companyType', $event)"
+      >
+        <span class="select-value">{{
+          selectedCompanyType || "Any company"
+        }}</span>
+        <svg
+          class="filter-glyph"
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M4 6.5h12" />
+          <path d="M6.5 10h7" />
+          <path d="M8.75 13.5h2.5" />
+          <path d="M14.25 5.25l1.75 1.25-1.75 1.25" />
+        </svg>
+      </button>
+      <div
+        class="select-menu"
+        *ngIf="isMenuOpen('companyType')"
+        (mousemove)="onMenuOptionHover($event)"
+      >
+        <button
+          class="menu-option"
+          type="button"
+          [class.is-selected]="!selectedCompanyType"
+          (click)="selectFilter('companyType', '', $event)"
+        >
+          Any company
+        </button>
+        <button
+          class="menu-option"
+          type="button"
+          *ngFor="let c of companyTypes"
+          [class.is-selected]="selectedCompanyType === c"
+          (click)="selectFilter('companyType', c, $event)"
+        >
+          {{ c }}
+        </button>
+      </div>
+    </div>
   </div>
-</div>
 
-
-<!-- Results Found Section -->
-<div class="results-found">
-  <p *ngIf="searchQuery.length > 0">
-    {{ filteredJobs.length }} results for '{{ searchQuery }}'
+  <p class="mobile-count" *ngIf="searchQuery || activeFilterCount > 0">
+    {{ filteredJobs.length }} result{{ filteredJobs.length !== 1 ? "s" : "" }}
   </p>
-</div>
 
-<!-- Main Content -->
-<div class="main-content">
-  <!-- Job List -->
-  <div class="job-list" *ngIf="filteredJobs.length > 0">
-    <div
-      *ngFor="let job of filteredJobs"
-      class="job-card"
-      (click)="onCardClick(job)"
-    >
-      <div class="card">
-        <!-- Header Section -->
-        <div class="header">
-          <div class="logo">
-            <img [src]="job.logo" [alt]="job.companyName + ' logo'" />
+  <div class="mobile-job-list">
+    <ng-container *ngIf="filteredJobs.length > 0; else mobileEmpty">
+      <article
+        *ngFor="let job of filteredJobs; let i = index"
+        class="job-card"
+        [style.--i]="i"
+        (click)="onCardClickMobile(job)"
+      >
+        <div class="card-header">
+          <img [src]="job.logo" [alt]="job.company" class="company-logo" />
+          <div class="card-meta">
+            <span class="company-name">{{ job.company }}</span>
+            <span class="type-pill">{{ job.jobType }}</span>
           </div>
-
-          <div class="title-text">
-            <div class="title">{{ job.title }}</div>
-          </div>
-
-          <h4 *ngIf="job.isHot" class="tag">Hot</h4>
+          <span *ngIf="job.badge" class="badge" [class]="'badge--' + job.badge">
+            {{ job.badge === "hot" ? "🔥" : "✶" }}&nbsp;{{
+              job.badge === "hot" ? "Hot" : "New"
+            }}
+          </span>
         </div>
-
-        <!-- Salary -->
-        <div class="salary">{{ job.salaryRange }}</div>
-
-        <!-- Job Details -->
-        <div class="details">
-          <div class="detail">
-            <span class="icon"><img src="company-icon.png" alt="" /></span>
-            <span class="text">{{ job.companyName }}</span>
-          </div>
-          <div class="detail">
-            <span class="icon"><img src="location-pin.png" alt="" /></span>
-            <span class="text">{{ job.location }}</span>
-          </div>
-          <div class="detail">
-            <span class="icon"><img src="jobtype.png" alt="" /></span>
-            <span class="text">{{ job.jobType }}</span>
-          </div>
+        <h3 class="job-title">{{ job.title }}</h3>
+        <p class="job-salary">{{ job.salary }}</p>
+        <div class="skill-tags">
+          <span class="skill-tag" *ngFor="let tag of job.tags.slice(0, 2)">{{
+            tag
+          }}</span>
         </div>
+        <div class="location-row">
+          <span>{{ job.location }}</span>
+          <span class="dot-sep">&middot;</span>
+          <span>{{ job.experienceLevel }}</span>
+        </div>
+      </article>
+    </ng-container>
+
+    <ng-template #mobileEmpty>
+      <div class="empty-state">
+        <span class="empty-icon">◌</span>
+        <p class="empty-title">No results</p>
+        <button waveBtn class="btn-clear-all" (click)="clearFilters()">
+          Reset
+        </button>
       </div>
-    </div>
+    </ng-template>
   </div>
-
-  <!-- No Results Message -->
-  <div *ngIf="filteredJobs.length === 0" class="no-results-container">
-    <div class="no-results">
-      <img src="searchNotFound.png" alt="No results" />
-      <p>No jobs available</p>
-      <p>Check back later</p>
-    </div>
-  </div>
-
-  <!-- Filter Content (only shown if jobs exist) -->
-  <div
-    *ngIf="filteredJobs.length > 0 && showFilterContent"
-    class="job-details"
-  >
-    <app-filter-content></app-filter-content>
-  </div>
-</div>
-
-
-
-<!-- Responsive Design max-width(390px) -->
-
-
-<!-- Main Content -->
-<div class="main-content-sm">
-  <!-- Job List -->
-  <div class="job-list" *ngIf="filteredJobs.length > 0">
-    <div
-      *ngFor="let job of filteredJobs"
-      class="job-card"
-      (click)="onCardClickSm(job)"
-    >
-      <div class="card">
-        <!-- Header Section -->
-        <div class="header">
-          <div class="logo">
-            <img [src]="job.logo" [alt]="job.companyName + ' logo'" />
-          </div>
-
-          <div class="title-text">
-            <div class="title">{{ job.title }}</div>
-          </div>
-
-          <h4 *ngIf="job.isHot" class="tag">Hot</h4>
-        </div>
-
-        <!-- Salary -->
-        <div class="salary">{{ job.salaryRange }}</div>
-
-        <!-- Job Details -->
-        <div class="details">
-          <div class="detail">
-            <span class="icon"><img src="company-icon.png" alt="" /></span>
-            <span class="text">{{ job.companyName }}</span>
-          </div>
-          <div class="detail">
-            <span class="icon"><img src="location-pin.png" alt="" /></span>
-            <span class="text">{{ job.location }}</span>
-          </div>
-          <div class="detail">
-            <span class="icon"><img src="jobtype.png" alt="" /></span>
-            <span class="text">{{ job.jobType }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- No Results Message -->
-  <div *ngIf="filteredJobs.length === 0" class="no-results-container">
-    <div class="no-results">
-      <img src="searchNotFound.png" alt="No results" />
-      <p>No jobs available</p>
-      <p>Check back later</p>
-    </div>
-  </div>
-
-  <!-- Filter Content (only shown if jobs exist) -->
-  <div
-    *ngIf="filteredJobs.length > 0 && showFilterContent"
-    class="job-details"
-  >
-    <app-filter-content></app-filter-content>
-  </div>
-</div>
-
+</section>
