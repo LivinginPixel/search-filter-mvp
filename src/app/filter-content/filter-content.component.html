@@ -1,103 +1,107 @@
-<div class="filtered-content">
-  <div class="job-card" *ngFor="let job of dataField">
-    <img [src]="job.img" alt="Job thumbnail" class="job-image" />
-    <div class="job-info-wrap">
-      <div class="job-header">
-        <div class="job-info">
-          <h1 class="job-title">{{ job.jobTitle }}</h1>
-          <p class="salary">{{ job.price }}</p>
+<div class="detail" *ngIf="job">
 
-          <!-- Company -->
-          <div class="job-details">
-            <div class="job-company">
-              <img src="company-icon.png" alt="Company Icon" class="icon" />
-              <span class="text">{{job.companyName}}</span>
-              <span><img src="seperator.svg" alt="seperator" /></span>
-              <img src="location-pin.png" alt="Location Icon" class="icon" />
-              <span class="text">{{job.location}}</span>
-            </div>
-          </div>
-
-          <!-- experience -->
-          <div class="job-tags">
-            <span class="tag">{{job.experienceLevel}}</span>
-            <span class="tag">{{job.workType}}</span>
-            <span class="tag">{{job.jobType}}</span>
-          </div>
-        </div>
-
-        <!-- Actions 'like and save' -->
-        <div class="job-actions">
-          <div class="icon-tags">
-            <button class="menu-dots">
-              <img src="Menu-dots.png" alt="Menu" class="menu-icon" />
-            </button>
-            <button class="save-text">
-              <img src="Favorite.png" alt="Save" class="action-icon" />Save
-            </button>
-            <button class="apply-now">Apply Now</button>
-          </div>
-          <span class="posted-time">{{job.postedAt}}</span>
-        </div>
+  <!-- Hero -->
+  <div class="detail-hero">
+    <div class="hero-left">
+      <img [src]="job.logo" [alt]="job.company" class="hero-logo" />
+      <div>
+        <p class="hero-company">{{ job.company }}</p>
+        <h1 class="hero-title">{{ job.title }}</h1>
+        <p class="hero-salary">{{ job.salary }}</p>
       </div>
     </div>
-
-    <!-- Recruiter -->
-    <div class="recuriter">
-      <h4 class="cont-recruit">Contact Recruiter</h4>
-      <div class="recruiter-details">
-        <img [src]="job.recruiterIcon" alt="" />
-        <div class="recruiter-info">
-          <span class="recr-name">{{job.recruiterName}}</span>
-          <span class="recr-pos">{{job.recruiterPosition}}</span>
-        </div>
-        <span class="job-agent">{{job.isAgent[0]}}</span>
-        <button class="message"><img src="Mail.png" alt="" />Message</button>
-      </div>
-    </div>
-
-    <!-- Job description -->
-    <div class="job-description">
-      <h4 class="description-h4">Job Description</h4>
-      <p class="description-p">{{ job.jobDescription }}</p>
-    </div>
-
-    <!-- Responsibility -->
-    <div class="responsibility">
-      <h4 class="respons-h4">Responsibilities</h4>
-      <p class="respons-p" *ngFor="let responsibility of job.responsibilities">
-        <img src="check.png" alt="Check" /> {{ responsibility }}
-      </p>
-    </div>
-
-    <!-- About company -->
-    <div class="about-company-card">
-      <div class="company-header">
-        <h4 class="">About company</h4>
-        <a [href]="" target="_blank" class="profile-link"
-          >View company profile</a
-        >
-      </div>
-      <div class="company-info">
-        <img [src]="job.companyLogo" alt="Company Logo" class="company-logo" />
-        <div>
-          <h3 class="company-name">{{ job.companyName }} Company</h3>
-          <p class="company-description">{{ job.companyDescription }}</p>
-        </div>
-      </div>
-      <div class="company-details">
-        <p><img src="outsource.png" alt="Type Icon" /> {{ job.outsourced }}</p>
-        <p>
-          <img src="user-icon.png" alt="Employees Icon" /> {{
-          job.numberOfEmployees}}
-        </p>
-        <p>
-          <img src="location-pin.png" alt="Location Icon" /> {{ job.location }}
-        </p>
-        <p>
-          <img src="Calendar.png" alt="Calendar Icon" /> {{ job.workingDays }}
-        </p>
-      </div>
+    <div class="hero-actions">
+      <button waveBtn class="btn-save">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round">
+          <path d="M5 3h10a1 1 0 011 1v13l-6-3-6 3V4a1 1 0 011-1z"/>
+        </svg>
+        Save
+      </button>
+      <button waveBtn class="btn-apply">Apply Now</button>
     </div>
   </div>
+
+  <!-- Meta tags -->
+  <div class="detail-tags">
+    <span class="meta-tag">📍 {{ job.location }}</span>
+    <span class="meta-tag">{{ job.jobType }}</span>
+    <span class="meta-tag">{{ job.experienceLevel }}</span>
+    <span class="meta-tag">{{ job.companyType }}</span>
+    <span class="post-time">Posted 2h ago</span>
+  </div>
+
+  <!-- Skill chips -->
+  <div class="skill-chips">
+    <span class="skill-chip" *ngFor="let tag of job.tags">{{ tag }}</span>
+  </div>
+
+  <!-- Recruiter -->
+  <div class="detail-section">
+    <h3 class="section-heading">Contact Recruiter</h3>
+    <div class="recruiter-row">
+      <div class="recruiter-avatar">RM</div>
+      <div class="recruiter-info">
+        <span class="recruiter-name">Romy Murray</span>
+        <span class="recruiter-role">Hiring Manager</span>
+      </div>
+      <span class="agent-chip">Job Agent</span>
+      <button waveBtn class="btn-message">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor"
+             stroke-width="1.7" stroke-linecap="round">
+          <rect x="2" y="4" width="16" height="13" rx="2"/>
+          <polyline points="2,4 10,12 18,4"/>
+        </svg>
+        Message
+      </button>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div class="detail-section">
+    <h3 class="section-heading">Job Description</h3>
+    <p class="section-body">
+      We're looking for a talented creative to join our team. You'll work on
+      complex design challenges, collaborate closely with engineers, and ship
+      experiences that genuinely delight users. High-impact role with strong
+      growth potential and an exceptional team.
+    </p>
+  </div>
+
+  <!-- Responsibilities -->
+  <div class="detail-section">
+    <h3 class="section-heading">Responsibilities</h3>
+    <ul class="resp-list">
+      <li *ngFor="let r of responsibilities">
+        <span class="check">✓</span>
+        {{ r }}
+      </li>
+    </ul>
+  </div>
+
+  <!-- About company -->
+  <div class="company-card">
+    <div class="company-card-header">
+      <h3 class="section-heading">About {{ job.company }}</h3>
+      <a href="#" class="company-link">View profile →</a>
+    </div>
+    <div class="company-card-body">
+      <img [src]="job.logo" [alt]="job.company" class="company-logo-lg" />
+      <div>
+        <h4 class="company-title">{{ job.company }}</h4>
+        <p class="section-body">
+          A leading company building the next generation of digital products.
+          Known for exceptional culture, strong compensation, and deeply
+          meaningful work.
+        </p>
+      </div>
+    </div>
+    <div class="company-meta">
+      <span>{{ job.companyType }}</span>
+      <span>100 – 500 employees</span>
+      <span>{{ job.location }}</span>
+      <span>Mon – Fri</span>
+    </div>
+  </div>
+
 </div>
