@@ -1,4 +1,129 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* ─── Design Tokens ─────────────────────────────── */
+:root {
+  --bg:           #09090e;
+  --surface:      #111119;
+  --surface-2:    #18182a;
+  --surface-3:    #1e1e2e;
+  --border:       rgba(255, 255, 255, 0.07);
+  --border-hover: rgba(255, 255, 255, 0.13);
+  --text-1:       #eaedf4;
+  --text-2:       #8c95a8;
+  --text-3:       #4e5869;
+  --accent:       #7c6ff7;
+  --accent-dim:   rgba(124, 111, 247, 0.14);
+  --accent-glow:  rgba(124, 111, 247, 0.28);
+  --hot:          #f97316;
+  --hot-dim:      rgba(249, 115, 22, 0.12);
+  --new:          #34d399;
+  --new-dim:      rgba(52, 211, 153, 0.11);
+  --r-sm:   6px;
+  --r-md:   10px;
+  --r-lg:   14px;
+  --r-xl:   20px;
+  --r-full: 9999px;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out:    cubic-bezier(0, 0, 0.2, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast:  140ms;
+  --dur-base:  260ms;
+  --dur-slow:  420ms;
+  --dur-bloom: 560ms;
+}
+
+/* ─── Reset ──────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background-color: var(--bg);
+  color: var(--text-1);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button { cursor: pointer; font-family: inherit; border: none; background: none; }
+input, select { font-family: inherit; }
+img { display: block; }
+
+/* ─── Scrollbar ──────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: var(--r-full); }
+
+/* ─── Selection ──────────────────────────────────── */
+::selection { background: var(--accent-dim); color: var(--text-1); }
+
+/* ═══════════════════════════════════════════════════
+   SNAKE WAVE BUTTON
+   Direction-aware: enter from left  → wave sweeps L→R
+                    enter from right → wave sweeps R→L
+   Same on leave (follows cursor exit direction).
+   ═══════════════════════════════════════════════════ */
+[waveBtn] {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+
+  /* Lift all direct children above the wave layer */
+  > * { position: relative; z-index: 1; }
+  > svg { position: relative; z-index: 1; }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    width: 100%;
+    /* Bright core, fading to edges — snake body glow */
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.03) 0%,
+      rgba(255, 255, 255, 0.24) 42%,
+      rgba(255, 255, 255, 0.36) 50%,
+      rgba(255, 255, 255, 0.24) 58%,
+      rgba(255, 255, 255, 0.03) 100%
+    );
+    /* Snake wave silhouette — fills from bottom, sinusoidal top edge */
+    clip-path: polygon(
+       0%  100%,  0%  62%,
+       4%  18%, 10%  58%, 16%  18%, 22%  58%, 28%  18%, 34%  58%,
+      40%  18%, 46%  58%, 52%  18%, 58%  58%, 64%  18%, 70%  58%,
+      76%  18%, 82%  58%, 88%  18%, 94%  58%, 100% 18%,
+      100% 100%
+    );
+    transform: translateX(-115%) skewX(-5deg);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  &.wave-ltr::before {
+    animation: wave-ltr 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  }
+
+  &.wave-rtl::before {
+    animation: wave-rtl 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  }
+}
+
+@keyframes wave-ltr {
+  0%   { transform: translateX(-115%) skewX(-5deg); }
+  60%  { transform: translateX(60%)   skewX( 3deg); }
+  100% { transform: translateX(115%)  skewX( 5deg); }
+}
+
+@keyframes wave-rtl {
+  0%   { transform: translateX(115%)  skewX( 5deg); }
+  60%  { transform: translateX(-60%)  skewX(-3deg); }
+  100% { transform: translateX(-115%) skewX(-5deg); }
+}
+
+/* ─── Reduced Motion ─────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
