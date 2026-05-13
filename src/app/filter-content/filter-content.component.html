@@ -1,5 +1,4 @@
 <div class="detail" *ngIf="job">
-
   <!-- Hero -->
   <div class="detail-hero">
     <div class="hero-left">
@@ -12,9 +11,14 @@
     </div>
     <div class="hero-actions">
       <button waveBtn class="btn-save">
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor"
-             stroke-width="1.8" stroke-linecap="round">
-          <path d="M5 3h10a1 1 0 011 1v13l-6-3-6 3V4a1 1 0 011-1z"/>
+        <svg
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        >
+          <path d="M5 3h10a1 1 0 011 1v13l-6-3-6 3V4a1 1 0 011-1z" />
         </svg>
         Save
       </button>
@@ -28,7 +32,7 @@
     <span class="meta-tag">{{ job.jobType }}</span>
     <span class="meta-tag">{{ job.experienceLevel }}</span>
     <span class="meta-tag">{{ job.companyType }}</span>
-    <span class="post-time">Posted 2h ago</span>
+    <span class="post-time">Posted {{ job.postedAgo }}</span>
   </div>
 
   <!-- Skill chips -->
@@ -40,17 +44,24 @@
   <div class="detail-section">
     <h3 class="section-heading">Contact Recruiter</h3>
     <div class="recruiter-row">
-      <div class="recruiter-avatar">RM</div>
+      <div class="recruiter-avatar">
+        {{ job.recruiterName.substring(0, 2).toUpperCase() }}
+      </div>
       <div class="recruiter-info">
-        <span class="recruiter-name">Romy Murray</span>
-        <span class="recruiter-role">Hiring Manager</span>
+        <span class="recruiter-name">{{ job.recruiterName }}</span>
+        <span class="recruiter-role">{{ job.recruiterRole }}</span>
       </div>
       <span class="agent-chip">Job Agent</span>
       <button waveBtn class="btn-message">
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor"
-             stroke-width="1.7" stroke-linecap="round">
-          <rect x="2" y="4" width="16" height="13" rx="2"/>
-          <polyline points="2,4 10,12 18,4"/>
+        <svg
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linecap="round"
+        >
+          <rect x="2" y="4" width="16" height="13" rx="2" />
+          <polyline points="2,4 10,12 18,4" />
         </svg>
         Message
       </button>
@@ -61,10 +72,7 @@
   <div class="detail-section">
     <h3 class="section-heading">Job Description</h3>
     <p class="section-body">
-      We're looking for a talented creative to join our team. You'll work on
-      complex design challenges, collaborate closely with engineers, and ship
-      experiences that genuinely delight users. High-impact role with strong
-      growth potential and an exceptional team.
+      {{ job.description }}
     </p>
   </div>
 
@@ -72,7 +80,10 @@
   <div class="detail-section">
     <h3 class="section-heading">Responsibilities</h3>
     <ul class="resp-list">
-      <li *ngFor="let r of responsibilities">
+      <li
+        *ngFor="let r of job.responsibilities; let i = index"
+        class="resp-item"
+      >
         <span class="check">✓</span>
         {{ r }}
       </li>
@@ -90,18 +101,15 @@
       <div>
         <h4 class="company-title">{{ job.company }}</h4>
         <p class="section-body">
-          A leading company building the next generation of digital products.
-          Known for exceptional culture, strong compensation, and deeply
-          meaningful work.
+          {{ job.companyDescription }}
         </p>
       </div>
     </div>
     <div class="company-meta">
-      <span>{{ job.companyType }}</span>
-      <span>100 – 500 employees</span>
-      <span>{{ job.location }}</span>
-      <span>Mon – Fri</span>
+      <span>{{ job.companyMeta.type }}</span>
+      <span>{{ job.companyMeta.size }}</span>
+      <span>{{ job.companyMeta.location }}</span>
+      <span>{{ job.companyMeta.schedule }}</span>
     </div>
   </div>
-
 </div>
