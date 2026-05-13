@@ -1,4 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+  ElementRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Job } from '../models/job.model';
@@ -11,17 +18,13 @@ import { WaveBtnDirective } from '../directives/wave-btn.directive';
   templateUrl: './filter-content.component.html',
   styleUrls: ['./filter-content.component.scss'],
 })
-export class FilterContentComponent implements OnInit {
+export class FilterContentComponent implements OnInit, OnChanges {
   @Input() job: Job | null = null;
 
-  readonly responsibilities = [
-    'Design and prototype user interfaces for web and mobile products.',
-    'Collaborate with engineers and PMs to define and refine UX strategy.',
-    'Conduct user research, usability tests, and iterate based on feedback.',
-    'Build and maintain a scalable, consistent design system.',
-  ];
-
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private el: ElementRef,
+  ) {}
 
   ngOnInit(): void {
     if (!this.job) {
@@ -30,5 +33,22 @@ export class FilterContentComponent implements OnInit {
     if (!this.job) {
       this.router.navigate(['/']);
     }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['job'] && !changes['job'].firstChange) {
+      // Job changed - replay animations by forcing a reflow
+      setTimeout(() => this.replayAnimations(), 0);
+    }
+  }
+
+  private replayAnimations(): void {
+    const hostEl = this.el.nativeElement as HTMLElement;
+    // Remove animation to reset state
+    hostEl.style.animation = 'none';
+    // Trigger reflow
+    void hostEl.offsetWidth;
+    // Re-apply animation
+    hostEl.style.animation = '';
   }
 }
