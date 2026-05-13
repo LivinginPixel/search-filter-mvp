@@ -10,4 +10,17 @@ export interface Job {
   logo: string;
   badge: 'hot' | 'new' | null;
   tags: string[];
+  // Detail panel content
+  description: string;
+  responsibilities: string[];
+  recruiterName: string;
+  recruiterRole: string;
+  postedAgo: string;
+  companyDescription: string;
+  companyMeta: {
+    type: string;
+    size: string;
+    location: string;
+    schedule: string;
+  };
 }
